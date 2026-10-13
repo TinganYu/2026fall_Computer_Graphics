@@ -44,16 +44,22 @@ public class PencilRenderer implements Renderer{
     
     private ArrayList<Vector3> points = new ArrayList<Vector3>();
     private boolean once;
+    private color save_color;
     @Override 
     public void render(){
         if(!shapeRenderer.checkInBox(new Vector3(mouseX,mouseY,0))) return;
         if(mousePressed){
             once = false;
+            if (points.isEmpty()) { 
+                save_color = currentColor; // 只有陣列是空的時候（下筆第一點）才記下顏色
+            }
+            save_color = currentColor;
             points.add(new Vector3(mouseX,mouseY,0));
+            
         }else{
             if(!once){
                 once = true;
-                shapeRenderer.addShape(new Point(points)); 
+                shapeRenderer.addShape(new Point(points,save_color)); 
                 points = new ArrayList<Vector3>();
             }
         }
@@ -61,7 +67,7 @@ public class PencilRenderer implements Renderer{
         for(int i=0;i<points.size()-1;i++){
             Vector3 p1 = points.get(i);
             Vector3 p2 = points.get(i+1);
-            CGLine(p1.x,p1.y,p2.x,p2.y);
+            CGLine(p1.x,p1.y,p2.x,p2.y, save_color);
         }
         
     }
@@ -73,16 +79,20 @@ public class LineRenderer implements Renderer{
     private boolean first_click;
     private Vector3 first_point;
     private Vector3 second_point;
+    private color save_color;
     
     @Override
     public void render(){
         if(!shapeRenderer.checkInBox(new Vector3(mouseX,mouseY,0))) return;
         if(mousePressed&& mouseButton == LEFT){
             if(!once){
-                if(!first_click) first_point = new Vector3(mouseX,mouseY,0);
+                if(!first_click){
+                    first_point = new Vector3(mouseX,mouseY,0);
+                    save_color=currentColor;
+                } 
                 if(first_click) second_point = new Vector3(mouseX,mouseY,0);             
                 if(first_click){
-                    shapeRenderer.addShape(new Line(first_point,second_point));
+                    shapeRenderer.addShape(new Line(first_point,second_point, save_color));
                     first_point = null;
                     second_point = null;
                 }
@@ -97,12 +107,12 @@ public class LineRenderer implements Renderer{
         else{
             once = false;
         }     
-        if(first_click && first_point!=null) CGLine(first_point.x,first_point.y,mouseX,mouseY);      
+        if(first_click && first_point!=null) CGLine(first_point.x,first_point.y,mouseX,mouseY,save_color);      
     }
 }
 
 public class CircleRenderer implements Renderer{
-  
+    private color save_color;
     private boolean once;
     private boolean first_click;
     private Vector3 first_point;
@@ -113,10 +123,13 @@ public class CircleRenderer implements Renderer{
         if(!shapeRenderer.checkInBox(new Vector3(mouseX,mouseY,0))) return;
         if(mousePressed&& mouseButton == LEFT){
               if(!once){
-                  if(!first_click) first_point = new Vector3(mouseX,mouseY,0);
+                  if(!first_click){
+                    first_point = new Vector3(mouseX,mouseY,0);
+                    save_color=currentColor;
+                  } 
                   if(first_click) second_point = new Vector3(mouseX,mouseY,0);             
                   if(first_click){
-                      shapeRenderer.addShape(new Circle(first_point,distance(first_point,second_point)));
+                      shapeRenderer.addShape(new Circle(first_point,distance(first_point,second_point),save_color));
                       first_point = null;
                       second_point = null;
                   }
@@ -131,26 +144,29 @@ public class CircleRenderer implements Renderer{
           else{
               once = false;
           }           
-          if(first_click && first_point!=null) CGCircle(first_point.x,first_point.y,distance(first_point,new Vector3(mouseX,mouseY,0)));
+          if(first_click && first_point!=null) CGCircle(first_point.x,first_point.y,distance(first_point,new Vector3(mouseX,mouseY,0)),save_color);
     }
 }
 
 public class PolygonRenderer implements Renderer{
-  
     private boolean once;
     private ArrayList<Vector3> verties = new ArrayList<Vector3>();
+    private color save_color;
   
     @Override
     public void render(){
         if(!shapeRenderer.checkInBox(new Vector3(mouseX,mouseY,0))) return;
         if(mousePressed&& mouseButton == LEFT){
             if(!once){
+                if(verties.isEmpty()){ 
+                  save_color = currentColor; // 鎖定多邊形的顏色
+                }
                 verties.add(new Vector3(mouseX,mouseY,0));
                 once = true;
             }
         }else if(mousePressed&& mouseButton == RIGHT){
             if(!once){
-              shapeRenderer.addShape(new Polygon(verties));
+              shapeRenderer.addShape(new Polygon(verties,save_color));
               verties = new ArrayList<Vector3>();
               once = true;
             }
@@ -162,10 +178,10 @@ public class PolygonRenderer implements Renderer{
             for(int i=0;i<verties.size()-1;i++){
                 Vector3 p1 = verties.get(i);
                 Vector3 p2 = verties.get(i+1);
-                CGLine(p1.x,p1.y,p2.x,p2.y);
+                CGLine(p1.x,p1.y,p2.x,p2.y,save_color);
             }
             Vector3 p = verties.get(verties.size()-1);
-            CGLine(p.x,p.y,mouseX,mouseY);
+            CGLine(p.x,p.y,mouseX,mouseY,save_color);
         }     
     }
 } 
@@ -176,13 +192,17 @@ public class EllipseRenderer implements Renderer{
   private Vector3 center;
   private float radius1 = 0;
   private float radius2 = 0;
+  private color save_color;
   
   @Override
   public void render(){
       if(!shapeRenderer.checkInBox(new Vector3(mouseX,mouseY,0))) return;
         if(mousePressed&& mouseButton == LEFT){
             if(!once){
-                if(times==0) center = new Vector3(mouseX,mouseY,0);
+                if(times==0){
+                    center = new Vector3(mouseX,mouseY,0);
+                    save_color=currentColor;
+                } 
                 if(times==1){
                     float dist = abs(center.x - mouseX);
                     radius1 = dist;
@@ -191,7 +211,7 @@ public class EllipseRenderer implements Renderer{
                 if(times==2){
                     float dist = abs(center.y - mouseY);                  
                     radius2 = dist;
-                    shapeRenderer.addShape(new Ellipse(center,radius1,radius2));
+                    shapeRenderer.addShape(new Ellipse(center,radius1,radius2,save_color));
                 }
                 times += 1;
                 times %=3;
@@ -207,11 +227,11 @@ public class EllipseRenderer implements Renderer{
         if(times==0) return;
         if(times==1) {
           float dist = abs(center.x - mouseX);
-          CGEllipse(center.x,center.y,dist,dist);
+          CGEllipse(center.x,center.y,dist,dist,save_color);
         }
         if(times==2){
           float dist = abs(center.y - mouseY);
-          CGEllipse(center.x,center.y,radius1,dist);
+          CGEllipse(center.x,center.y,radius1,dist,save_color);
         }
 
   }
@@ -240,6 +260,7 @@ class EraserRenderer implements Renderer{
 class CurveRenderer implements Renderer{
   private boolean once;
   private int times;
+  private color save_color;
   private Vector3 cp1;
   private Vector3 cp2;
   private Vector3 cp3;
@@ -253,6 +274,7 @@ class CurveRenderer implements Renderer{
               switch(times){
                 case 0:
                   cp1 = new Vector3(mouseX,mouseY,0);
+                  save_color=currentColor;
                   break;
                 case 1:
                   cp2 = new Vector3(mouseX,mouseY,0);
@@ -262,7 +284,7 @@ class CurveRenderer implements Renderer{
                   break;
                 case 3:
                   cp4 = new Vector3(mouseX,mouseY,0);
-                  shapeRenderer.addShape(new Curve(cp1,cp3,cp4,cp2));
+                  shapeRenderer.addShape(new Curve(cp1,cp3,cp4,cp2,save_color));
                  
                   break;
               }
@@ -278,9 +300,9 @@ class CurveRenderer implements Renderer{
       }
       Vector3 cp = new Vector3(mouseX,mouseY,0);
       if(times==0) return;
-      if(times==1) CGCurve(cp1,cp1,cp ,cp);
-      if(times==2) CGCurve(cp1,cp,cp2 ,cp2);
-      if(times==3) CGCurve(cp1,cp3,cp ,cp2);
+      if(times==1) CGCurve(cp1,cp1,cp ,cp,save_color);
+      if(times==2) CGCurve(cp1,cp,cp2 ,cp2,save_color);
+      if(times==3) CGCurve(cp1,cp3,cp ,cp2,save_color);
       
   }
 }

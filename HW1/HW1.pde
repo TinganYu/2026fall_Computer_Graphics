@@ -5,12 +5,17 @@ ShapeButton ellipseButton;
 ShapeButton curveButton;
 ShapeButton pencilButton;
 ShapeButton eraserButton;
+Button blackButton;
+Button redButton;
+Button blueButton;
+Button greenButton;
 
 Button clearButton;
 
 ShapeRenderer shapeRenderer;
 ArrayList<ShapeButton> shapeButton;
 float eraserSize = 20;
+color currentColor = color(0,0,0); //這是processor內建函式
 
 public void setup() {
     size(1000, 800);
@@ -29,9 +34,20 @@ public void draw() {
             shapeRenderer.setRenderer(sb.getRendererType());
         });
     }
-
     clearButton.run(() -> {
         shapeRenderer.clear();
+    });
+    blackButton.run(()->{
+        currentColor=color(0,0,0);
+    });
+    redButton.run(()->{
+        currentColor=color(255,0,0);
+    });
+    blueButton.run(()->{
+        currentColor=color(0,0,255);
+    });
+    greenButton.run(()->{
+        currentColor=color(0,255,0);
     });
     shapeRenderer.box.show();
 
@@ -162,6 +178,18 @@ public void initButton() {
 
     eraserButton.setBoxAndClickColor(color(250), color(150));
     shapeButton.add(eraserButton);
+
+    blackButton = new Button(255, 10, 30, 30); 
+    blackButton.setBoxAndClickColor(color(0,0,0), color(0, 0, 0));
+
+    redButton = new Button(290, 10, 30, 30); 
+    redButton.setBoxAndClickColor(color(255,0,0), color(187, 0, 0));
+
+    blueButton= new Button(325, 10, 30, 30); 
+    blueButton.setBoxAndClickColor(color(0,0,255), color(0, 0, 187));
+
+    greenButton = new Button(360, 10, 30, 30); 
+    greenButton.setBoxAndClickColor(color(0,255,0), color(0, 187, 0));
 
 }
 
