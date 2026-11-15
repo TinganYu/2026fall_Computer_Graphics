@@ -121,46 +121,46 @@ public void CGEllipse(float x, float y, float r1, float r2, color save_color) {
     yp = r2;
 
     // 陡峭區域
-    d1 = (r2 * r2) - (r1 * r1 * r2) + (0.25 * r1 * r1);
-    dx = 2 * r2 * r2 * xp;
-    dy = 2 * r1 * r1 * yp;
+    d1 = (r2 * r2)- (r1 * r1 * r2) + (0.25 * r1 * r1);
+    dx =2 * r2 * r2 * xp;
+    dy =2 * r1 * r1 * yp;
 
     while (dx < dy) {
         drawPoint(xp + x, yp + y, save_color);
         drawPoint(-xp + x, yp + y, save_color);
-        drawPoint(xp + x, -yp + y, save_color);
-        drawPoint(-xp + x, -yp + y, save_color);
+        drawPoint(xp + x,-yp + y, save_color);
+        drawPoint(-xp + x,-yp + y, save_color);
         if (d1 < 0){
                 xp++;
-                dx = dx + (2 * r2 * r2);
+                dx = dx+ (2 * r2 * r2);
                 d1 = d1 + dx + (r2 * r2);
         }else{
             xp++;
             yp--;
             dx = dx + (2 * r2 * r2);
-            dy = dy - (2 * r1 * r1);
+            dy = dy- (2 *r1 * r1);
             d1 = d1 + dx - dy + (r2 * r2);
         }
     }
 
     // 平滑區域
-    d2 = ((r2 * r2) * ((xp + 0.5) * (xp + 0.5))) + ((r1 * r1) * ((yp - 1) * (yp - 1))) - (r1 * r1 * r2 * r2);
+    d2 = ((r2 * r2) * ((xp + 0.5)* (xp + 0.5))) + ((r1* r1) * ((yp- 1) * (yp - 1))) - (r1 * r1 * r2 * r2);
 
     while (yp >= 0){ 
-        drawPoint(xp + x, yp + y, save_color);
+        drawPoint(xp + x, yp +y, save_color);
         drawPoint(-xp + x, yp + y, save_color);
-        drawPoint(xp + x, -yp + y, save_color);
-        drawPoint(-xp + x, -yp + y, save_color);
+        drawPoint(xp + x, -yp+ y, save_color);
+        drawPoint(-xp +x, -yp+ y, save_color);
         if (d2 > 0) {
             yp--;
-            dy = dy - (2 * r1 * r1);
-            d2 = d2 + (r1 * r1) - dy;
+            dy =dy - (2 * r1 * r1);
+            d2 =d2 + (r1 * r1) - dy;
         }else{
             yp--;
             xp++;
-            dx = dx + (2 * r2 * r2);
-            dy = dy - (2 * r1 * r1);
-            d2 = d2 + dx - dy + (r1 * r1);
+            dx = dx +(2 * r2 * r2);
+            dy = dy -(2 * r1 * r1);
+            d2 = d2 +dx - dy + (r1 * r1);
         }
     }
 }
