@@ -7,8 +7,10 @@
     m[8] = 0.0f; m[9] = 0.0f; m[10] = s.z; m[11] = 0.0f;
     m[12] = 0.0f; m[13] = 0.0f; m[14] = 0.0f; m[15] = 1.0f;
 ```
-對應
-$$S(s_x,s_y,s_z)=
+對應：
+
+$$
+S(s_x,s_y,s_z)=
 \begin{bmatrix}
 s_x & 0 & 0 & 0\\
 0 & s_y & 0 & 0\\
@@ -32,7 +34,7 @@ if((y>yi)!=(y>yj)){  //如果沒有通過任何邊，換檢查下一個
     }
 }
 ```
-![fill poly](HW2\img\fill.png)
+![fill poly](HW2/img/fill.png)
 
 3. 完成 findBoundBox  
 基本上就是找最小以及最大的x,y數值
@@ -72,7 +74,7 @@ for boundary 的每一條邊：
     input = output
 return input
 ```
-![clip poly](HW2\img\poly_clip.png)
+![clip poly](HW2/img/poly_clip.png)
 
 AI協助部分:  
 - 協助找出 CGLine 使用浮點數判斷終止條件，可能造成無限迴圈的問題。
