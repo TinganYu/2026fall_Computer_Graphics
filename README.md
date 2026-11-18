@@ -80,3 +80,23 @@ AI協助部分:
 - 協助找出 CGLine 使用浮點數判斷終止條件，可能造成無限迴圈的問題。
 - 參考 AI 釐清並檢查各項演算法的概念與實作細節，程式由本人理解後完成。
 - 利用AI協助撰寫兩條線的交點公式。
+
+5. Bonus：SSAA（2 × 2 Super-Sampling）  
+本 bonus 部分由本人理解需求後與 AI 協作完成：AI 協助設計 2 × 2 sample buffer、depth/color buffer 與 resolve 流程；程式內容、整合方式及是否符合專案需求由本人確認並調整。
+
+在原本的像素中心內，以 2 × 2 取樣方式取得四個 sub-pixel：
+```text
+(0.25, 0.25)  (0.75, 0.25)
+(0.25, 0.75)  (0.75, 0.75)
+```
+![SSAA image](HW2/img/SSAA.png)
+
+程式邏輯如下：
+
+1. 使用 `pnpoly()` 判斷每個 sub-pixel 是否位於圖形內。
+2. 每個螢幕像素維護四個 sample，每個 sample 分別記錄是否被圖形覆蓋、depth 和顏色。
+3. 新圖形寫入 sample 時會比較 depth，保留較近面的資料。
+4. 所有圖形繪製完成後，對每個像素的四個 sample 作平均 resolve，藉由不同 coverage 混合邊緣顏色，減少鋸齒。
+
+(目前實作把圖形的平面深度存入每個 sample，並未呼叫 `CGLine()` 繪製額外紅色邊框。)
+

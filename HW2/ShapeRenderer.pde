@@ -11,7 +11,7 @@ public class ShapeRenderer {
     public void run() {
         box.show();
         shapes.forEach(Shape::drawShape);
-
+        engine.resolveSSAA(); // 將 2 × 2 SSAA samples resolve 成螢幕像素。
     }
 
     public void addShape(Shape s) {

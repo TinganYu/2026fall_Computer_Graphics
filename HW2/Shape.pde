@@ -9,6 +9,8 @@ public class Shape{
         for(int i=0;i<t_pos.length;i++){
             t_pos[i] = model_matrix.mult(vertex[i].getVector4(1)).xyz();                       
         }
+
+        float shapeDepth = t_pos.length > 0 ? t_pos[0].z : 0;
         
         t_pos = Sutherland_Hodgman_algorithm(t_pos,engine.boundary);
         
@@ -18,6 +20,7 @@ public class Shape{
 
         Vector3[] minmax = findBoundBox(t_pos);
         
+        /* 以下是原本的程式
         loadPixels();       
         for(int i = int(minmax[0].x);i<=minmax[1].x;i++){
             for(int j = int(minmax[0].y);j<=minmax[1].y;j++){
@@ -31,9 +34,30 @@ public class Shape{
         for(int i=0;i<t_pos.length;i++){          
             CGLine(t_pos[i].x,t_pos[i].y,t_pos[(i+1)%t_pos.length].x,t_pos[(i+1)%t_pos.length].y); // if you finish it, you can commant this sentance
         }
-        
         updatePixels();
-        
+
+        */
+
+        // Bonus: 對每個像素執行 2 × 2 SSAA sub-pixel sampling。
+        for (int i = int(minmax[0].x); i <= int(minmax[1].x); i++) {
+            for (int j = int(minmax[0].y); j <= int(minmax[1].y); j++) {
+                float[] sampleX = {0.25, 0.75}; //每個像素又分成4等分 sub-pixels
+                float[] sampleY = {0.25, 0.75};
+
+                for (int sy = 0; sy < 2; sy++) {
+                    for (int sx = 0; sx < 2; sx++) {
+                        if (pnpoly(i + sampleX[sx], j + sampleY[sy], t_pos)) {
+                            int sampleNumber = sy * 2 + sx;
+                            engine.writeSSAA(i + sampleX[sx],
+                                             j + sampleY[sy],
+                                             sampleNumber,
+                                             shapeDepth,
+                                             color(100));
+                        }
+                    }
+                }
+            }
+        }
     };
     
     public Matrix4 localToWorld(){
