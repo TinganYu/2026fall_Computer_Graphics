@@ -40,7 +40,7 @@ public class Camera {
         near = n;
         far = f;
         
-        // TODO HW3
+        // TODO HW3 把 3D 相機座標轉成可以畫到 2D 螢幕上的座標
         // This function takes four parameters, which are 
         // the width of the screen, the height of the screen
         // the near plane and the far plane of the camera.
@@ -48,6 +48,14 @@ public class Camera {
         // Finally, pass the result into projection matrix.
 
         projection = Matrix4.Identity();
+        float fovRadians = radians(GH_FOV) / 2.0f; //GH_FOV是視角，所以要轉換成弧度才可以後續使用tan()。並且注意到只有一半。
+        float aspectRatio =(float) w/h;
+
+        projection.m[5]=aspectRatio;
+        projection.m[10]=(far/(far-near))*tan(fovRadians);
+        projection.m[11]=(far*near/(near-far))*tan(fovRadians);
+        projection.m[14]=tan(fovRadians);
+        projection.m[15] = 0.0f;
 
     }
 
@@ -61,7 +69,32 @@ public class Camera {
         // the point the camera is looking at.
         // We uses topVector = (0,1,0) to calculate the eye matrix.
         // Finally, pass the result into worldView matrix.
+        Vector3 topVector = new Vector3(0, 1, 0);
+        Vector3 viewVector = Vector3.sub(lookat, pos);
+        viewVector.normalize();
 
-        worldView = Matrix4.Identity();
+        Vector3 V1 = Vector3.cross(topVector, viewVector);
+        V1.normalize();
+        Vector3 V2 = Vector3.cross(viewVector, V1);
+        V2.normalize();
+        Matrix4 GRM = Matrix4.Identity();
+        GRM.m[0] = V1.x;
+        GRM.m[1] = V1.y;
+        GRM.m[2] = V1.z;
+
+        GRM.m[4] = V2.x;
+        GRM.m[5] = V2.y;
+        GRM.m[6] = V2.z;
+
+        GRM.m[8] = viewVector.x;
+        GRM.m[9] = viewVector.y;
+        GRM.m[10] = viewVector.z;
+
+        Matrix4 mirrorX = Matrix4.Identity();
+        mirrorX.m[0] =-1.0f;
+
+        worldView = mirrorX
+    .mult(GRM)
+    .mult(Matrix4.Trans(pos.mult(-1)));
     }
 }

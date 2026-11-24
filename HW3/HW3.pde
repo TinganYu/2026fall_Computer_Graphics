@@ -64,6 +64,23 @@ void cameraControl(){
     // Use setPositionOrientation(Vector3 position,Vector3 lookat) to modify the ViewMatrix.
     // Hint : Use keyboard event and mouse click event to change the position of the camera.       
         
-    main_camera.setPositionOrientation(cam_position, new Vector3(0,0,1));
+    //main_camera.setPositionOrientation(cam_position, new Vector3(0,0,1));
+    main_camera.setPositionOrientation(cam_position, lookat); //更新相機問至但看得點不變
 
+}
+
+void keyPressed() {
+    if (key == 'w') {
+        cam_position.z += 0.1f;
+    } else if (key == 's') {
+        cam_position.z -= 0.1f;
+    } else if (key == 'a') {
+        cam_position.x -= 0.1f;
+    } else if (key == 'd') {
+        cam_position.x += 0.1f;
+    } else if (key == 'r') {
+        cam_position.y += 0.1f;  // 向上
+    } else if (key == 'f') {
+        cam_position.y -= 0.1f;  // 向下
+    }
 }

@@ -32,7 +32,8 @@ public class DepthVertexShader extends VertexShader {
 public class DepthFragmentShader extends FragmentShader {
     Vector4 main(Object[] varying) {
         Vector3 position = (Vector3) varying[0];
-
-        return new Vector4(position.z, position.z, position.z, 1.0);
+        float d = map(position.z, 0.98f, 1.0f, 0.0f, 1.0f); // 暫時拉高對比測試
+        return new Vector4(d, d, d, 1.0);
+        //return new Vector4(position.z, position.z, position.z, 1.0);
     }
 }
